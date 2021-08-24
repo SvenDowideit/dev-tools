@@ -5,8 +5,8 @@
 ### Usage
 
 1. Update the `hostPath` property in all `configs/**/kind.yaml` files to match the path of the project on your filesystem
-1. (optional) Update the `hostPort` property in all `configs/**/kind.yaml` files to the port that suits you the best to access portainer instance. Default ports are, by context:
-  * base: 9010
+1. (optional) Update the `hostPort` property in all `configs/**/kind.yaml` files to the port that suits you the best to access portainer instance. Default ports (http, https) are, by context:
+  * base: 9010, 9011
   * ingress: 9020
   * multi-master: 9030
   * taints: 9040

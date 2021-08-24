@@ -18,9 +18,9 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: portainer-sa-clusteradmin
-  namespace: portainer
+  - kind: ServiceAccount
+    name: portainer-sa-clusteradmin
+    namespace: portainer
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,21 +38,23 @@ spec:
     spec:
       serviceAccountName: portainer-sa-clusteradmin
       containers:
-      - name: portainer
-        image: portainer/base
-        # imagePullPolicy: "Never"
-        command: ["/app/portainer"]
-        args: ["--no-analytics",]
-        ports:
-        - containerPort: 9000
-          hostPort: 9000
-        - containerPort: 8000
-          hostPort: 8000
-        volumeMounts:
-        - mountPath: /app
-          name: portainer-dist
+        - name: portainer
+          image: portainer/base
+          # imagePullPolicy: "Never"
+          command: ["/app/portainer"]
+          args: ["--no-analytics"]
+          ports:
+            - containerPort: 9000
+              hostPort: 9000
+            - containerPort: 9443
+              hostPort: 9443
+            - containerPort: 8000
+              hostPort: 8000
+          volumeMounts:
+            - mountPath: /app
+              name: portainer-dist
       volumes:
-      - name: portainer-dist
-        hostPath:
-          path: /portainer/app
-          type: Directory
+        - name: portainer-dist
+          hostPath:
+            path: /portainer/app
+            type: Directory
