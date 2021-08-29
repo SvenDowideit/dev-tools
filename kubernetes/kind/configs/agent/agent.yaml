@@ -18,9 +18,9 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: portainer-sa-clusteradmin
-  namespace: portainer
+  - kind: ServiceAccount
+    name: portainer-sa-clusteradmin
+    namespace: portainer
 ---
 apiVersion: v1
 kind: Service
@@ -64,18 +64,26 @@ spec:
     spec:
       serviceAccountName: portainer-sa-clusteradmin
       containers:
-      - name: portainer-agent
-        image: portainer/agent:latest
-        imagePullPolicy: Always
-        env:
-        - name: LOG_LEVEL
-          value: DEBUG
-        - name: AGENT_CLUSTER_ADDR
-          value: "portainer-agent-headless"
-        - name: KUBERNETES_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        ports:
-        - containerPort: 9001
-          protocol: TCP
+        - name: portainer-agent
+          image: portainer/agent:latest
+          imagePullPolicy: Always
+          env:
+            - name: LOG_LEVEL
+              value: DEBUG
+            - name: AGENT_CLUSTER_ADDR
+              value: "portainer-agent-headless"
+            - name: KUBERNETES_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app
+              name: agent-dist
+      volumes:
+        - name: agent-dist
+          hostPath:
+            path: /agent/app
+            type: Directory

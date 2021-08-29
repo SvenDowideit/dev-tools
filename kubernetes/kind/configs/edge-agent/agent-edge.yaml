@@ -18,9 +18,9 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: portainer-sa-clusteradmin
-  namespace: portainer
+  - kind: ServiceAccount
+    name: portainer-sa-clusteradmin
+    namespace: portainer
 # ---
 # # <INFO> Optional: can be added to expose the agent port 80 to associate an Edge key.
 # apiVersion: v1
@@ -65,32 +65,43 @@ spec:
     spec:
       serviceAccountName: portainer-sa-clusteradmin
       containers:
-      - name: portainer-agent
-        image: portainer/agent:2.0.0
-        imagePullPolicy: Always
-        env:
-        - name: LOG_LEVEL
-          value: INFO
-        - name: KUBERNETES_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: EDGE
-          value: "1"
-        - name: AGENT_CLUSTER_ADDR
-          value: "portainer-agent"
-        - name: EDGE_ID
-          valueFrom:
-            configMapKeyRef:
-              name: portainer-agent-edge-id
-              key: edge.id
-        - name: EDGE_KEY
-          valueFrom:
-            secretKeyRef:
-              name: portainer-agent-edge-key
-              key: edge.key
-        ports:
-        - containerPort: 9001
-          protocol: TCP
-        - containerPort: 80
-          protocol: TCP
+        - name: portainer-agent
+          image: portainer/agent:latest
+          imagePullPolicy: Always
+          env:
+            - name: LOG_LEVEL
+              value: INFO
+            - name: KUBERNETES_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: EDGE_INSECURE_POLL
+              # permit self signed certs for other IP's (0.0.0.0)
+              value: "1"
+            - name: EDGE
+              value: "1"
+            - name: AGENT_CLUSTER_ADDR
+              value: "portainer-agent"
+            - name: EDGE_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: portainer-agent-edge-id
+                  key: edge.id
+            - name: EDGE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: portainer-agent-edge-key
+                  key: edge.key
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+            - containerPort: 80
+              protocol: TCP
+      #     volumeMounts:
+      #       - mountPath: /app
+      #         name: agent-dist
+      # volumes:
+      #   - name: agent-dist
+      #     hostPath:
+      #       path: /agent/app
+      #       type: Directory

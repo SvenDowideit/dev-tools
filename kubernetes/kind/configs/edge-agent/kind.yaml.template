@@ -6,10 +6,15 @@ nodes:
     # hostPath must match the path to the dist folder of the portainer project
   - hostPath: _PORTAINER_PATH_/dist
     containerPath: /portainer/app
+      # for building your own agent
+      - hostPath: /home/sven/src/portainer/agent/dist
+        containerPath: /agent/app
   extraPortMappings:
   - containerPort: 9000
     # hostPort will be the port to use to access portainer instance at localhost:hostPort
     hostPort: 9060
+  - containerPort: 9443
+    hostPort: 9061
     # port 8000 needs to be exposed in order to access the edge agent
   - containerPort: 8000
     hostPort: 8000
